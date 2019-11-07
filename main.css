@@ -1,0 +1,17 @@
+body{
+    width:960px;
+    margin:10px auto;
+}
+#navdiv {
+    /*vertical-align:middle;*/
+    margin-bottom: 20px;
+}
+circle{
+    fill:steelblue;
+    /*stroke:steelblue;
+    stroke-width:2px;*/
+}
+line{
+    stroke:grey;
+    stroke-width:3px;
+}
