@@ -3,9 +3,9 @@ if (!Array.prototype.last){
         return this[this.length - 1];
     };
 }
-let r,lw;
+let r;
 const MAX_DOI=100;
-let cur_focus_v;
+let cur_focus_name;
 let Tooltip,mouseover,mousemove,mouseleave;
 //Tooltip
 // create a tooltip
@@ -83,18 +83,18 @@ newData.findDistance=function(node){
     fd(newData.root,0);
     //console.log(node.v);
 };
+function findNodeByName(v,name) {
+    if(v.name===name) return v;
+    for(let c of v.children){
+        let t=findNodeByName(c,name);
+        if(t) return t;
+    }
+    return undefined;
+}
 newData.calDOIByName=function(name){
     newData.reset();
     console.log(name);
-    function dfs(v,name) {
-        if(v.name===name) return v;
-        for(let c of v.children){
-            let t=dfs(c,name);
-            if(t) return t;
-        }
-        return undefined;
-    }
-    let node=dfs(newData.root,name);
+    let node=findNodeByName(newData.root,name);
     console.log(node);
     newData.calDOI(node);
 };
@@ -118,7 +118,7 @@ newData.prepareData=function () {
 //const margin = {top: 20, right: 30, bottom: 30, left: 40},
 const width = 960, //- margin.left - margin.right,
     height = 600; // - margin.top - margin.bottom;
-let oriData;
+//let oriData;
 let curCityNumber=20,curDOI=-50;
 let tree={'node_w':1,'node_y':1,'node_r':40};
 tree.comp=(a,b)=>a.val<b.val;
@@ -131,51 +131,16 @@ tree.sortChildren=function()
     }
     sortC(tree.root);
 };
-let calValue=function (root) {
-    function calV(v) {
-        if(!v.children.length) {v.val=0;return;}
-        v.children.forEach(v=>calV(v));
-        v.val=v.children.length+v.children.reduce((prev,cur)=>{return {'val':prev.val+cur.val};}).val;
-    }
-    calV(root);
-};
-tree.findDistance=function(node){
-    console.log(node);
-    function fd(v,lv) {
-        if(v.tag) lv=v.dist;
-        v.dist=lv;
-        v.children.forEach(c=>fd(c,lv+1));
-    }
-    function traceBack(nt,dt) {
-        while(nt.v!==tree.root){
-            console.log('wrong');
-            nt.v.dist=dt;
-            nt.v.tag=true;
-            nt=nt.f;
-            dt+=1;
-        }
-        nt.v.dist=dt;
-        nt.v.tag=true;
-        //return dt;
-    }
-    traceBack(node,0);
-    fd(tree.root,0);
-    //console.log(node.v);
-};
-tree.calDOI=function (click_node) {
-    tree.findDistance(click_node);
-    function cDOI(v){
-        v.doi=r(v.val)-v.dist*2;
-        v.children.forEach(c=>cDOI(c));
-    }
-    cDOI(tree.root);
-    click_node.v.doi=MAX_DOI;
-};
+
 const DIRECTION={
   'u': ['y',1],
     'd':['y',-1],
     'l':['x',-1],
     'r':['x',1]
+};
+let moveTree=function(v,d,l){
+    v.p[DIRECTION[d][0]]+=DIRECTION[d][1]*l;
+    v.children.forEach(c=>moveTree(c,d,l));
 };
 tree.clone=function(root){
     function cl(v) {
@@ -187,10 +152,7 @@ tree.clone=function(root){
     }
     tree.root=cl(root);
 };
-let moveTree=function(v,d,l){
-    v.p[DIRECTION[d][0]]+=DIRECTION[d][1]*l;
-    v.children.forEach(c=>moveTree(c,d,l));
-};
+
 tree.filter=function(filter){
     let ft=(v)=>{
         v.children=v.children.filter(filter);
@@ -253,6 +215,12 @@ function filter(v) {
     return v.val>curCityNumber&&v.doi>curDOI;
 }
 //let svgWidth=300,svgHeight=300;
+function centerTree(maxX,maxY,node) {
+    let centerX=(maxX+1)/2;
+    let centerY=(maxY+1)/2;
+    moveTree(tree.root,'r',centerX-node.p.x);
+    moveTree(tree.root,'u',centerY-node.p.y);
+}
 function update() {
     tree.clone(newData.root);
     tree.filter(filter);
@@ -263,16 +231,17 @@ function update() {
         tree.calAbsPosition();
         vs = tree.getVertices();
         edges=tree.getEdges();
-        //console.log(vs);
-        //if(!cur_focus_v) cur_focus_v=vs[0];
-        //tree.calDOI(cur_focus_v);
-
         let maxX = vs.reduce((prev, cur) => {
             if (prev.v.p.x > cur.v.p.x) return {'v':{'p': {'x': prev.v.p.x}}};
             return {'v':{'p': {'x': cur.v.p.x}}};
         }).v.p.x;
+        let maxY=tree.root.p.y;
+        if(cur_focus_name) {
+            let node = findNodeByName(tree.root,cur_focus_name);
+            centerTree(maxX,maxY,node);
+        }
         x = d3.scaleLinear().domain([1, maxX]).range([tree.node_r, width - tree.node_r]);
-        y = d3.scaleLinear().domain([1, tree.root.p.y]).range([height - tree.node_r, tree.node_r+3]);
+        y = d3.scaleLinear().domain([1, maxY]).range([height - tree.node_r, tree.node_r+3]);
     }
 
     let circles=d3.select("#g_circles")
@@ -317,7 +286,7 @@ function update() {
         .on("mouseleave",mouseleave)
         ,500);
     setTimeout(()=>d3.selectAll("circle")
-            .on("click",d=>{newData.calDOIByName(d.v.name);update();})
+            .on("click",d=>{cur_focus_name=d.v.name;newData.calDOIByName(d.v.name);update();})
         ,500);
 
 }
@@ -367,14 +336,8 @@ function main(data){
 
     newData.root=transformData(data);
     newData.prepareData();
-    //oriData=data[0];
-    //console.log(oriData);
-    //tree.root=oriData;
-    //tree.calValue();
-    //d3.select("#city_number").attr("max",tree.root.val);
-    //lw = d3.scaleLinear().domain([0, tree.root.val]).range([0, tree.node_r-5]);
-    update();
-    //tree.calDOI({'v':tree.root});
+
+
     d3.select("#city_number")
         .on('mouseover',mouseover)
         .on('mouseleave',mouseleave)
@@ -391,6 +354,7 @@ function main(data){
                 .style("left", (d3.mouse(this)[0]+175)+"px")
                 .style("top", (d3.mouse(this)[1] + "px"));
         });
-    //d3.select("#doi").on('change',(d,i,nodes)=>console.log(d3.select(nodes[i]).property("value")));
+
+    update();
 }
 d3.json("China.json").then(main).catch(error=>console.log(error));
