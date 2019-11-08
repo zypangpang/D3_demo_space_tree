@@ -3,13 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+    <link rel="stylesheet" type="text/css" href="bootstrap/css/bootstrap.css">
     <link rel="stylesheet" type="text/css" href="main.css">
     <script src="d3/d3.js"></script>
+    <script src="Queue.src.js"></script>
 </head>
 <body>
 </body>
-<div id="navdiv">
-    <input type="number" id="doi">
+<div id="navdiv" class="d-flex align-content-center mb-1 ">
+    区县数<input  class="mx-2" type="range" id="city_number" min="-1" max="202">
+    DOI<input  class="ml-2" type="range" id="doi" min="-10" max="10">
 </div>
+<div class="tooltip"></div>
 <script src="main_space_tree.js"></script>
 </html>

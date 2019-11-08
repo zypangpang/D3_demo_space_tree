@@ -1,17 +1,33 @@
 body{
-    width:960px;
-    margin:10px auto;
+    margin:10px 10px ;
+    position: absolute;
+  border: 3px solid #73AD21;
 }
 #navdiv {
-    /*vertical-align:middle;*/
-    margin-bottom: 20px;
+    border: 3px solid #000000;
 }
 circle{
     fill:steelblue;
-    /*stroke:steelblue;
-    stroke-width:2px;*/
+    /*stroke:steelblue;*/
+    stroke-width:3px;
 }
 line{
     stroke:grey;
     stroke-width:3px;
 }
+
+.tooltip {
+    position: absolute;
+    /*z-index: 4;*/
+    display: block;
+    margin: 5px;
+    font-size: 12pt;
+    word-wrap: break-word;
+    opacity: 0;
+    background-color: white;
+    border:solid;
+    border-width:2px;
+    border-radius:5px;
+    padding:5px;
+}
+
