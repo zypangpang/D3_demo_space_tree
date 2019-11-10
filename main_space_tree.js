@@ -3,9 +3,19 @@ if (!Array.prototype.last){
         return this[this.length - 1];
     };
 }
+//Main
+//const margin = {top: 20, right: 30, bottom: 30, left: 40},
+const width = 1024, //- margin.left - margin.right,
+    height = 600; // - margin.top - margin.bottom;
+//let oriData;
+let curCityNumber=10,curDOI=-2;
 let r;
 const MAX_DOI=100;
 let cur_focus_name;
+let move_tree=false;
+let X=width,Y=height;
+let isPath=true;
+
 let Tooltip,mouseover,mousemove,mouseleave;
 //Tooltip
 // create a tooltip
@@ -22,19 +32,19 @@ Tooltip = d3.select(".tooltip");
 // Three function that change the tooltip when user hover / move / leave a cell
 mouseover = function(d) {
     Tooltip.style("opacity", 1);
-    d3.select(this).style("stroke", "black")
+    //d3.select(this).style("stroke", "black")
 };
 mousemove = function(d) {
-    let text=d.v.name+" "+d.v.val;
-    if(d.v.dist) text=text+" "+d.v.dist;
-    if(d.v.doi) text=text+" "+d.v.doi;
+    let text=`[${d.v.name}] 区县数:${d.v.val}`;
+    if(d.v.dist!==undefined) text=text+" 距离:"+d.v.dist;
+    if(d.v.doi!=undefined) text=text+" DOI:"+d.v.doi.toFixed(2);
     Tooltip.html(text)
         .style("left", (d3.mouse(this)[0]+20) + "px")
         .style("top", (d3.mouse(this)[1]-10) + "px")
 };
 mouseleave = function(d) {
     Tooltip.style("opacity", 0);
-    d3.select(this).style("stroke", "none")
+    //d3.select(this).style("stroke", "none")
 };
 let newData={};
 newData.calValue=function(){
@@ -114,12 +124,7 @@ newData.prepareData=function () {
     r = d3.scaleSqrt().domain([0, newData.root.val]).range([1, tree.node_r]);
     newData.calDOI(newData.root);
 };
-//Main
-//const margin = {top: 20, right: 30, bottom: 30, left: 40},
-const width = 960, //- margin.left - margin.right,
-    height = 600; // - margin.top - margin.bottom;
-//let oriData;
-let curCityNumber=20,curDOI=-50;
+
 let tree={'node_w':1,'node_y':1,'node_r':40};
 tree.comp=(a,b)=>a.val<b.val;
 tree.sortChildren=function()
@@ -167,8 +172,7 @@ tree.calAbsPosition=function(){
       v.children.forEach(child=>calXY(child));
       let left=0,maxY=-1;//,max_h=-1;
       v.children.forEach(child=>{
-         //child.p.x+=left;
-         moveTree(child,'r',left);
+          moveTree(child,'r',left);
          left+=child.p.w;
          maxY=child.p.y>maxY?child.p.y:maxY;
       });
@@ -177,6 +181,7 @@ tree.calAbsPosition=function(){
           'x':(v.children[0].p.x+v.children.last().p.x)/2,
           'y':maxY+1,
           'w':left
+          //'w':(v.children[0].p.x+v.children.last().p.x)/2+1
       };
     }
     calXY(tree.root);
@@ -212,7 +217,7 @@ tree.getEdges=function(){
 function filter(v) {
     //if(v.doi) return v.val>curCityNumber&&v.doi>curDOI;
     //return v.val>curCityNumber;
-    return v.val>curCityNumber&&v.doi>curDOI;
+    return v.val>=curCityNumber&&v.doi>=curDOI;
 }
 //let svgWidth=300,svgHeight=300;
 function centerTree(maxX,maxY,node) {
@@ -222,10 +227,11 @@ function centerTree(maxX,maxY,node) {
     moveTree(tree.root,'u',centerY-node.p.y);
 }
 function update() {
+    d3.select("#focus_name").text(cur_focus_name);
     tree.clone(newData.root);
     tree.filter(filter);
     let vs=[],edges=[];
-    let x,y;
+    let x,y,diagonal1,diagonal2;
     if(tree.root) {
         //tree.sortChildren();
         tree.calAbsPosition();
@@ -236,59 +242,113 @@ function update() {
             return {'v':{'p': {'x': cur.v.p.x}}};
         }).v.p.x;
         let maxY=tree.root.p.y;
-        if(cur_focus_name) {
-            let node = findNodeByName(tree.root,cur_focus_name);
-            centerTree(maxX,maxY,node);
+        if(move_tree) {
+            let node = findNodeByName(tree.root, cur_focus_name);
+            centerTree(maxX, maxY, node);
         }
-        x = d3.scaleLinear().domain([1, maxX]).range([tree.node_r, width - tree.node_r]);
-        y = d3.scaleLinear().domain([1, maxY]).range([height - tree.node_r, tree.node_r+3]);
+        x = d3.scaleLinear().domain([1, maxX]).range([tree.node_r+(width-X)/2, (width+X)/2 - tree.node_r]);
+        y = d3.scaleLinear().domain([1, maxY]).range([(height+Y)/2 - tree.node_r, (height-Y)/2+tree.node_r+3]);
+        diagonal1 = d3.linkVertical()
+            .source(function(d) { return {"x":d.p1.x, "y":d.p1.y}; })
+            .target(function(d) { return {"x":d.p1.x, "y":d.p1.y}; })
+            .x(d=>x(d.x))
+            .y(d=>y(d.y));
+        diagonal2 = d3.linkVertical()
+            .source(function(d) { return {"x":d.p1.x, "y":d.p1.y}; })
+            .target(function(d) { return {"x":d.p2.x, "y":d.p2.y}; })
+            .x(d=>x(d.x))
+            .y(d=>y(d.y));
     }
 
     let circles=d3.select("#g_circles")
         .selectAll("circle")
         .data(vs);
     circles.exit().remove();
-    circles.transition().duration(500)
+    circles.attr("id",d=>d.v.name)
+        .style("stroke","none")
+        .transition().duration(500)
         .attr("cx",d=>x(d.v.p.x))
         .attr("cy",d=>y(d.v.p.y))
         .attr("r",d=>r(d.v.val));
 
-    setTimeout(()=>{
-    circles.enter().append("circle")
+    let newCircles=circles.enter().append("circle")
+        .style("opacity","0")
+        .attr("id",d=>d.v.name)
+        .attr("absX",d=>d.v.p.x)
+        .attr("absY",d=>d.v.p.y)
         .attr("cx",d=>x(d.f.v.p.x))
         .attr("cy",d=>y(d.f.v.p.y))
-        .attr("r",d=>r(d.v.val))
-        .transition().duration(500)
-        .attr("cx",d=>x(d.v.p.x))
-        .attr("cy",d=>y(d.v.p.y));},500);
+        .attr("r",d=>r(d.v.val));
 
-    let lines=d3.select("#g_lines")
-        .selectAll("line")
-        .data(edges);
-    lines.exit().remove();
     setTimeout(()=>{
-    lines.enter()
-        .append("line")
-        .style("stroke-width",d=>r(d.val))
-        .attr("x1",d=>x(d.p1.x)).attr("y1",d=>y(d.p1.y))
-        .attr("x2",d=>x(d.p1.x)).attr("y2",d=>y(d.p1.y))
-        .transition().duration(500)
-        .attr("x2",d=>x(d.p2.x)).attr("y2",d=>y(d.p2.y))
-    ;},500);
-    lines
-        .transition().duration(500)
-        .style("stroke-width",d=>r(d.val))
-        .attr("x1",d=>x(d.p1.x)).attr("y1",d=>y(d.p1.y))
-        .attr("x2",d=>x(d.p2.x)).attr("y2",d=>y(d.p2.y));
-    setTimeout(()=>d3.selectAll("circle")
+        newCircles
+            .style("opacity","1")
+            .transition().duration(500)
+            .attr("cx",d=>x(d.v.p.x))
+            .attr("cy",d=>y(d.v.p.y));
+
+    },500);
+    setTimeout(()=>{
+        d3.select(`#${cur_focus_name}`)
+        //.transition().duration(500)
+            .style("stroke","#c4788b");
+    },800);
+
+
+    if(isPath) {
+        let lines = d3.select("#g_lines")
+            .selectAll("path")
+            .data(edges);
+        lines.exit().remove();
+        lines.transition().duration(500)
+            .style("stroke-width", d => r(d.val))
+            .attr("d", diagonal2);
+        let newLines=lines.enter()
+            .append("path")
+            .style("opacity","0")
+            .style("stroke-width", d => r(d.val))
+            .attr('d', diagonal1);
+
+        setTimeout(() => {
+            newLines
+                .style("opacity","1")
+                .transition().duration(500)
+                .attr('d', diagonal2);
+        }, 500);
+    }
+    else{
+        let lines = d3.select("#g_lines")
+            .selectAll("line")
+            .data(edges);
+        lines.exit().remove();
+        lines
+            .transition().duration(500)
+            .style("stroke-width",d=>r(d.val))
+            .attr("x1",d=>x(d.p1.x)).attr("y1",d=>y(d.p1.y))
+            .attr("x2",d=>x(d.p2.x)).attr("y2",d=>y(d.p2.y));
+        let newLines=lines.enter()
+            .append("line")
+            .style("opacity","0")
+            .style("stroke-width",d=>r(d.val))
+            .attr("x1",d=>x(d.p1.x)).attr("y1",d=>y(d.p1.y))
+            .attr("x2",d=>x(d.p1.x)).attr("y2",d=>y(d.p1.y));
+        setTimeout(() => {
+            newLines
+                .style("opacity","1")
+                .transition().duration(500)
+                .attr("x2",d=>x(d.p2.x)).attr("y2",d=>y(d.p2.y));
+        }, 500);
+    }
+    d3.selectAll("circle")
         .on("mouseover",mouseover)
         .on("mousemove",mousemove)
-        .on("mouseleave",mouseleave)
-        ,500);
-    setTimeout(()=>d3.selectAll("circle")
-            .on("click",d=>{cur_focus_name=d.v.name;newData.calDOIByName(d.v.name);update();})
-        ,500);
-
+        .on("mouseleave",mouseleave);
+    d3.selectAll("circle")
+        .on("click",d=>{
+            cur_focus_name=d.v.name;
+            newData.calDOIByName(cur_focus_name);
+            update();
+        });
 }
 
 function transformData(data) {
@@ -314,6 +374,7 @@ function transformData(data) {
     return dataNew;
 }
 function main(data){
+    cur_focus_name="中国";
     d3.select("body")
         .append("svg")
         .attr("width",width)
@@ -325,18 +386,44 @@ function main(data){
     svg.append("g").attr("id","g_circles");
         //.attr("transform",`translate(${margin.left},${margin.top}`);
 
-    d3.select("#city_number").on('change',function(){
-        curCityNumber=this.value;
+    d3.select("#city_number").property("value",curCityNumber).on('change',function(){
+        curCityNumber=(+this.value);
         update();
     });
-    d3.select("#doi").on('change',function () {
-        curDOI=this.value;
+    d3.select("#doi").property("value",curDOI).on('change',function () {
+        curDOI=(+this.value);
+        update();
+    });
+    d3.select("#x_span")
+        .attr("min",width/2)
+        .attr("max",width)
+        .property("value",X)
+        .on('change',function () {
+        X=(+this.value);
+        update();
+    });
+    d3.select("#y_span")
+        .attr("min",height/2)
+        .attr("max",height)
+        .property("value",X)
+        .on('change',function () {
+        Y=(+this.value);
+        update();
+    });
+    d3.select("#move_tree").on("change",function(){
+        move_tree = this.checked;
+        update();
+    });
+    d3.select("#is_path").on("change",function(){
+        isPath= this.checked;
+        d3.selectAll("circle").remove();
+        d3.selectAll("line").remove();
+        d3.selectAll("path").remove();
         update();
     });
 
     newData.root=transformData(data);
     newData.prepareData();
-
 
     d3.select("#city_number")
         .on('mouseover',mouseover)
@@ -351,8 +438,24 @@ function main(data){
         .on('mouseleave',mouseleave)
         .on('mousemove',function(){
             Tooltip.html(this.value)
-                .style("left", (d3.mouse(this)[0]+175)+"px")
-                .style("top", (d3.mouse(this)[1] + "px"));
+                .style("left", (d3.mouse(this)[0]+140)+"px")
+                .style("top", d3.mouse(this)[1] + "px");
+        });
+    d3.select("#x_span")
+        .on('mouseover',mouseover)
+        .on('mouseleave',mouseleave)
+        .on('mousemove',function(){
+            Tooltip.html(this.value)
+                .style("left", (d3.mouse(this)[0]+250)+"px")
+                .style("top", d3.mouse(this)[1] + "px");
+        });
+    d3.select("#y_span")
+        .on('mouseover',mouseover)
+        .on('mouseleave',mouseleave)
+        .on('mousemove',function(){
+            Tooltip.html(this.value)
+                .style("left", (d3.mouse(this)[0]+380)+"px")
+                .style("top", d3.mouse(this)[1] + "px");
         });
 
     update();

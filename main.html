@@ -10,9 +10,36 @@
 </head>
 <body>
 </body>
-<div id="navdiv" class="d-flex align-content-center mb-1 ">
-    区县数<input  class="mx-2" type="range" id="city_number" min="-1" max="202">
-    DOI<input  class="ml-2" type="range" id="doi" min="-10" max="10">
+<div id="navdiv" class="d-flex align-content-center p-1 mb-2 border-bottom border-bottom">
+    <!--区县数<input  class="mx-2" type="range" id="city_number" min="-1" max="202">
+    DOI<input  class="ml-2" type="range" id="doi" min="-10" max="10">-->
+    <label for="city_number" class="my-0 mr-1 p-0">区县数</label>
+    <input type="range" style="width: 100px" class="custom-range mr-2" id="city_number">
+
+    <label for="doi" class="my-0 mr-1 p-0">DOI</label>
+    <input type="range" style="width: 100px" class="custom-range mr-2" min="-10" max="10" id="doi">
+
+    <label for="x_span" class="my-0 mr-1 p-0">X</label>
+    <input type="range" style="width: 100px" class="custom-range mr-2" id="x_span">
+
+    <label for="y_span" class="my-0 mr-1 p-0">Y</label>
+    <input type="range" style="width: 100px" class="custom-range mr-2" min="-10" max="10" id="y_span">
+
+    <!--<div class="form-check">
+        <input class="form-check-input" type="checkbox" value="" id="defaultCheck1">
+        <label class="form-check-label" for="defaultCheck1">
+            Default checkbox
+        </label>
+    </div>-->
+    <div class="custom-control custom-checkbox mx-1">
+        <input class="custom-control-input " type="checkbox" id="move_tree">
+        <label class="custom-control-label " for="move_tree">结点中心化</label>
+    </div>
+    <div class="custom-control custom-checkbox mx-1">
+        <input class="custom-control-input " type="checkbox" id="is_path" checked>
+        <label class="custom-control-label " for="is_path">曲线显示</label>
+    </div>
+    <h5 class="m-0 ml-auto"><span id="focus_name" class="py-1 badge badge-secondary"></span></h5>
 </div>
 <div class="tooltip"></div>
 <script src="main_space_tree.js"></script>
