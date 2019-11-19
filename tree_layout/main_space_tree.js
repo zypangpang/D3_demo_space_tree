@@ -460,4 +460,4 @@ function main(data){
 
     update();
 }
-d3.json("China.json").then(main).catch(error=>console.log(error));
+d3.json("../data/China.json").then(main).catch(error=>console.log(error));
