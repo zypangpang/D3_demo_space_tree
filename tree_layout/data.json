@@ -1,0 +1,40 @@
+[
+  {
+    "name": "l1_1",
+    "val": 100,
+    "children": [
+      {
+        "name": "l2_2",
+        "val": 40,
+        "children": [
+          {
+            "name": "l3_1",
+            "val": 20,
+            "children": []
+          },
+          {
+            "name": "l3_2",
+            "val": 40,
+            "children": []
+          }
+        ]
+      },
+      {
+        "name": "l2_1",
+        "val": 80,
+        "children": [
+          {
+            "name": "l3_1",
+            "val": 30,
+            "children": []
+          },
+          {
+            "name": "l3_2",
+            "val": 50,
+            "children": []
+          }
+        ]
+      }
+    ]
+  }
+]
