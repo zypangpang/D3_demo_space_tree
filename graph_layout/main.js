@@ -3,7 +3,7 @@ function sleep(ms) {
 }
 const WIDTH = 1024, //- margin.left - margin.right,
     HEIGHT = 600; // - margin.top - margin.bottom;
-const R=20,E=1;
+const R=15,E=1;
 let TRANS_TIME=100;
 let SEPERATION=10;
 //const K=10;
@@ -146,15 +146,6 @@ async function FRLayout(g,space) {
                     let d=u.pos.minus(v.pos);
                     let dlen=d.length();
                     u.displacement=u.displacement.add(d.divide(dlen).multiply(fr(dlen)));
-
-                    //Just for debug
-                    /*if(i===1&& !d.x){
-                        console.log("u "+u.pos.x+" "+u.pos.y);
-                        console.log("v "+v.pos.x+" "+v.pos.y);
-                        console.log(d.x,d.y);
-                        console.log('dlen'+dlen);
-                        console.log(u.displacement.x,u.displacement.y);
-                    }*/
                 }
             }
         }
@@ -165,27 +156,11 @@ async function FRLayout(g,space) {
             let dlen=d.length();
             u.displacement=u.displacement.add(d.divide(dlen).multiply(fa(dlen)));
             v.displacement=v.displacement.minus(d.divide(dlen).multiply(fa(dlen)));
-            //Just for debug
-            /*if(!u.displacement.x) {
-                console.log('uid '+u.id);
-                console.log(u.displacement.x,u.displacement.y);
-            }
-            if(!v.displacement.x) {
-                console.log('vid '+v.id);
-                console.log(v.displacement.x,v.displacement.y);
-            }*/
         }
         g.vertices.forEach(u=>{
             let dlen=u.displacement.length();
             //u.pos=u.pos.add(u.displacement);
             u.pos=u.pos.add(u.displacement.multiply(Math.min(t,dlen)/dlen));
-            //For debug
-            /*if(!u.pos.x){
-                console.log("i "+i);
-                console.log('uid '+u.id);
-                console.log('dlen'+dlen);
-                console.log(u.displacement.x,u.displacement.y);
-            }*/
             u.displacement=new Point(0,0);
         });
 
