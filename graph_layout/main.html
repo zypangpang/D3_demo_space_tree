@@ -12,17 +12,17 @@
 <div id="navdiv" class="d-flex align-content-center p-1 mb-2 border-bottom border-bottom">
     <!--区县数<input  class="mx-2" type="range" id="city_number" min="-1" max="202">
     DOI<input  class="ml-2" type="range" id="doi" min="-10" max="10">-->
-    <label for="city_number" class="my-0 mr-1 p-0">区县数</label>
-    <input type="range" style="width: 100px" class="custom-range mr-2" id="city_number">
+    <label for="paper_number" class="my-0 mr-1 p-0">论文数</label>
+    <input type="range" style="width: 100px" class="custom-range mr-2" min="0" max="30" id="paper_number">
 
-    <label for="doi" class="my-0 mr-1 p-0">DOI</label>
-    <input type="range" style="width: 100px" class="custom-range mr-2" min="-10" max="10" id="doi">
+    <label for="seperation" class="my-0 mr-1 p-0">区分度</label>
+    <input type="range" style="width: 100px" class="custom-range mr-2" min="1" max=50 id="seperation">
 
-    <label for="x_span" class="my-0 mr-1 p-0">X</label>
-    <input type="range" style="width: 100px" class="custom-range mr-2" id="x_span">
+    <label for="iteration" class="my-0 mr-1 p-0">迭代次数</label>
+    <input type="range" style="width: 100px" class="custom-range mr-2" min="2" max="200" id="iteration">
 
-    <label for="y_span" class="my-0 mr-1 p-0">Y</label>
-    <input type="range" style="width: 100px" class="custom-range mr-2" min="-10" max="10" id="y_span">
+    <label for="transition" class="my-0 mr-1 p-0">位移时间</label>
+    <input type="range" style="width: 100px" class="custom-range mr-2" min="50" max="500" id="transition">
 
     <!--<div class="form-check">
         <input class="form-check-input" type="checkbox" value="" id="defaultCheck1">
@@ -30,15 +30,16 @@
             Default checkbox
         </label>
     </div>-->
-    <div class="custom-control custom-checkbox mx-1">
-        <input class="custom-control-input " type="checkbox" id="move_tree">
-        <label class="custom-control-label " for="move_tree">结点中心化</label>
+    <div class="custom-control custom-checkbox mx-1  ">
+        <input class="custom-control-input " type="checkbox" id="demo">
+        <label class="custom-control-label " for="demo">三点示例</label>
     </div>
-    <div class="custom-control custom-checkbox mx-1">
+    <button class="btn btn-primary mx-1 px-2 py-0" id="reset">复原</button>
+    <!--<div class="custom-control custom-checkbox mx-1">
         <input class="custom-control-input " type="checkbox" id="is_path" checked>
         <label class="custom-control-label " for="is_path">曲线显示</label>
-    </div>
-    <h5 class="m-0 ml-auto"><span id="focus_name" class="py-1 badge badge-secondary"></span></h5>
+    </div>-->
+    <h5 class="m-0 ml-auto"><span id="info" class="py-1 "></span></h5>
 </div>
 <div class="tooltip"></div>
 <script src="main.js"></script>
