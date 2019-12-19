@@ -165,7 +165,7 @@ async function FRLayout(g,space) {
         });
 
         updateGraph();
-        await sleep(TRANS_TIME/2);
+        await sleep(TRANS_TIME-5);
     }
     d3.select("#info").text("Done");
 }

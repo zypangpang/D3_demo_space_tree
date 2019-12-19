@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" type="text/css" href="../bootstrap/css/bootstrap.css">
+    <link rel="stylesheet" type="text/css" href="./main.css">
+    <script src="../d3/d3.js"></script>
+    <script src="./Queue.src.js"></script>
+</head>
+<body>
+<div id="navdiv" class="d-flex align-content-center p-1 mb-2 border-bottom border-bottom">
+    <!--区县数<input  class="mx-2" type="range" id="city_number" min="-1" max="202">
+    DOI<input  class="ml-2" type="range" id="doi" min="-10" max="10">-->
+    <label for="city_number" class="my-0 mr-1 p-0">区县数</label>
+    <input type="range" style="width: 100px" class="custom-range mr-2" min="0" max="100" id="city_number">
+
+    <label for="doi" class="my-0 mr-1 p-0">DOI</label>
+    <input type="range" style="width: 100px" class="custom-range mr-2" min="-10" max="10" id="doi">
+
+    <label for="x_span" class="my-0 mr-1 p-0">X</label>
+    <input type="range" style="width: 100px" class="custom-range mr-2" id="x_span">
+
+    <label for="y_span" class="my-0 mr-1 p-0">Y</label>
+    <input type="range" style="width: 100px" class="custom-range mr-2" min="-10" max="10" id="y_span">
+
+    <!--<div class="form-check">
+        <input class="form-check-input" type="checkbox" value="" id="defaultCheck1">
+        <label class="form-check-label" for="defaultCheck1">
+            Default checkbox
+        </label>
+    </div>-->
+    <div class="custom-control custom-checkbox mx-1">
+        <input class="custom-control-input " type="checkbox" id="move_tree">
+        <label class="custom-control-label " for="move_tree">结点中心化</label>
+    </div>
+    <div class="custom-control custom-checkbox mx-1">
+        <input class="custom-control-input " type="checkbox" id="is_path" checked>
+        <label class="custom-control-label " for="is_path">曲线显示</label>
+    </div>
+    <h5 class="m-0 ml-auto"><span id="focus_name" class="py-1 badge badge-secondary"></span></h5>
+</div>
+<div id="tree_div"></div>
+<div class="tooltip"></div>
+</body>
+<script src="test.js"></script>
+<script src="tidy_tree.js"></script>
+<script src="main.js"></script>
+</html>
