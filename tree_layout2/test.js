@@ -77,23 +77,24 @@ function findPartialConnections(startPos, scale, dimension= 'step'){
   return res;
 }
 function findLayerByScaleBFS(startPos, scale, dimension='step'){
-  let res = {'name':startPos,'children':[]};
+  let res = {'name':startPos,'value':0,'children':[]};
   let set=new Set();
   let queue=new Queue();
 
-  queue.enqueue([res,startPos,scale]);
+  queue.enqueue([res,startPos,0]);
   set.add(startPos);
   while(!queue.isEmpty()){
     let v=queue.dequeue();
     let v_tree=v[0],v_id=v[1];
-    const scale=v[2];
+    const accumulate_val=v[2];
     //console.log(v_id);
     if(info[v_id]===undefined) continue;
     for(const nextPos of Object.keys(info[v_id])){
-      if(info[v_id][nextPos][dimension] <= scale && info[v_id][nextPos][dimension] !== 0 && !set.has(nextPos)){
-        let t_res={'name':nextPos,'children':[]};
+      let value=info[v_id][nextPos][dimension];
+      if( value !== 0 && accumulate_val + value <= scale && !set.has(nextPos)){
+        let t_res={'name':nextPos,'value':accumulate_val+value,'children':[]};
         v_tree['children'].push(t_res);
-        queue.enqueue([t_res,nextPos,scale-info[v_id][nextPos][dimension]]);
+        queue.enqueue([t_res,nextPos,accumulate_val+value]);
         set.add(nextPos);
       }
     }

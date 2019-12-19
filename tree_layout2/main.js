@@ -17,7 +17,7 @@ function main(data){
     console.log(Object.keys(info).length);
     console.log("finish init");*/
     console.log("begin find");
-    let layer = findLayerConnections('盖州', 200, 'time' );
+    let layer = findLayerConnections('北京南',120 , 'time' );
     console.log(layer);
 
     radial_tree(layer,'#tree_div');
