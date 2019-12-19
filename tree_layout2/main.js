@@ -17,10 +17,11 @@ function main(data){
     console.log(Object.keys(info).length);
     console.log("finish init");*/
     console.log("begin find");
-    let layer = findLayerConnections('北京南',120 , 'time' );
+    let layer = findLayerConnections('北京南',200 , 'time' );
     console.log(layer);
 
-    radial_tree(layer,'#tree_div');
+    radial_tree(layer,'tree_div');
+    //tree_map(layer,'tree_div');
     //downloadTextFile(JSON.stringify(sumInfo),"sumInfo.json");
 
 }

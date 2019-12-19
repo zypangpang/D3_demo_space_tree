@@ -5,24 +5,6 @@ function autoBox() {
 }
 
 function radial_tree(data,div_id) {
-    let badge = d3.select("#focus_name");
-// Three function that change the tooltip when user hover / move / leave a cell
-    let mouseover = function(d) {
-        let text=`${d.data.value}`;
-        badge.style("opacity", 1);
-        badge.html(text);
-    };
-    /*let mousemove = function(d) {
-        let text=`[${d.data.value}]`;
-        Tooltip.html(text)
-            .style("left", (d3.mouse(this)[0]+520) + "px")
-            .style("top", (d3.mouse(this)[1]-10) + "px")
-    };*/
-    let mouseleave = function(d) {
-        badge.style("opacity", 0);
-        //d3.select(this).style("stroke", "none")
-    };
-
     let tree = d3.tree()
         .size([2 * Math.PI, radius])
         .separation((a, b) => (a.parent === b.parent ? 1 : 2) / a.depth);
@@ -84,7 +66,7 @@ function radial_tree(data,div_id) {
             .attr("stroke-opacity", 0);
 
         new_nodes.append("circle")
-            .attr("fill", d => d.children ? "#555" : "#999")
+            .attr("fill", d => d.children || d._children ? "#555" : "#999")
             .attr("id", d => `c${d.id}`)
             .attr("r", circle_r);
 
@@ -104,13 +86,11 @@ function radial_tree(data,div_id) {
         translate(${d.y},0)`)
             .attr("fill-opacity", 1)
             .attr("stroke-opacity", 1);
-
+        d3.selectAll(".node").append("title").text(d=>d.data.value);
         d3.selectAll(".node").on('click',d=>{
             d.children=d.children?null:d._children;
             update(d);
-        }).on("mouseover",mouseover)
-         //.on("mousemove",mousemove)
-         .on("mouseleave",mouseleave);
+        });
         root.eachBefore(d => {
             d.x0 = d.x;
             d.y0 = d.y;
@@ -121,7 +101,7 @@ function radial_tree(data,div_id) {
         svg.attr("transform", d3.event.transform);
     }
 
-    const base_svg = d3.select(div_id).append("svg")
+    const base_svg = d3.select(`#${div_id}`).append("svg")
         .style("height", 'auto')
         .style("font", "14px sans-serif")
         .style("margin", "5px");
