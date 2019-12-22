@@ -1,7 +1,7 @@
 function tree_map(data,div_id) {
     const width = 1000, height = 1000;
     //let format = d3.format(",d");
-    let color = d3.scaleOrdinal(d3.schemeCategory10);
+    let color = d3.scaleOrdinal(d3['schemeCategory10']);
     data=d3.hierarchy(data)
         .count()
         .sort((a, b) => b.value - a.value);

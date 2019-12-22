@@ -120,7 +120,7 @@ function radial_tree(data,div_id) {
         .attr("stroke-width", 2.5);
     const node_g = svg.append("g")
         .attr("stroke-linejoin", "round")
-        .attr("stroke-width", 5);
+        .attr("stroke-width", 3);
 
     update(root);
 

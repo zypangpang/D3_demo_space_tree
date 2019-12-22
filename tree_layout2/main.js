@@ -9,6 +9,8 @@ function load_data(files){
     train_list=files[2];
     city_infos=files[3];*/
 }
+let tree_type=true;
+let layer;
 function main(data){
     load_data(data);
     console.log("data done");
@@ -17,13 +19,25 @@ function main(data){
     console.log(Object.keys(info).length);
     console.log("finish init");*/
     console.log("begin find");
-    let layer = findLayerConnections('北京南',200 , 'time' );
-    console.log(layer);
+    layer = findLayerConnections('北京南',200 , 'time' );
 
-    radial_tree(layer,'tree_div');
+    //radial_tree(layer,'tree_div');
     //tree_map(layer,'tree_div');
     //downloadTextFile(JSON.stringify(sumInfo),"sumInfo.json");
-
+    d3.select("#tree_type").on('change',function () {
+        tree_type=this.checked;
+        tree_update();
+    });
+    tree_update();
+}
+function tree_update() {
+    d3.select("#tree_div").selectAll("*").remove();
+    if(tree_type){
+        radial_tree(layer,'tree_div');
+    }
+    else{
+        tree_map(layer,'tree_div');
+    }
 }
 function downloadTextFile(text, name) {
   const a = document.createElement('a');
