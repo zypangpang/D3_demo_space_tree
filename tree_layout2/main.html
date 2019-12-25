@@ -6,11 +6,38 @@
     <link rel="stylesheet" type="text/css" href="../bootstrap/css/bootstrap.css">
     <link rel="stylesheet" type="text/css" href="./main.css">
     <script src="../d3/d3.js"></script>
+    <script src="../jquery/jquery-3.4.1.min.js"></script>
     <script src="./Queue.src.js"></script>
 </head>
 <body>
-<div id="navdiv" class="d-flex align-content-center p-1 mb-2 border-bottom border-bottom">
+<div id="navdiv" class="d-flex align-content-center p-1 mb-2 border-bottom">
+    <form id="input_form" class="form-inline">
+    <div class="input-group ">
+        <div class="input-group-prepend">
+            <span class="input-group-text" >站点</span>
+        </div>
+        <input name="station" type="text" class="form-control rounded-0 border-right-0" value="北京">
+    </div>
+    <div class="input-group">
+        <div class="input-group-prepend ">
+            <span class="input-group-text rounded-0" >度量值</span>
+        </div>
+        <input type="text" name="scale" class="form-control rounded-0 border-right-0" value="200" >
+    </div>
+    <div class="input-group">
+        <div class="input-group-prepend ">
+            <select name="dimension" class="form-control rounded-0"  >
+                <option value="time" selected>时间</option>
+                <option value="step">转乘次数</option>
+            </select>
+        </div>
+        <div class="input-group-append">
+            <button  class="btn btn-primary" type="submit">确定</button>
+        </div>
+    </div>
+    </form>
     <!--区县数<input  class="mx-2" type="range" id="city_number" min="-1" max="202">
+
     DOI<input  class="ml-2" type="range" id="doi" min="-10" max="10">-->
     <!--<label for="city_number" class="my-0 mr-1 p-0">区县数</label>
     <input type="range" style="width: 100px" class="custom-range mr-2" min="0" max="100" id="city_number">
@@ -34,11 +61,13 @@
         <input class="custom-control-input " type="checkbox" id="move_tree">
         <label class="custom-control-label " for="move_tree">结点中心化</label>
     </div>-->
-    <div class="custom-control custom-checkbox mx-1">
-        <input class="custom-control-input " type="checkbox" id="tree_type" checked>
-        <label class="custom-control-label " for="tree_type">Radial Tree</label>
+    <div class="d-flex ml-auto">
+        <div class="custom-control custom-checkbox mr-3  align-self-center">
+            <input class="custom-control-input " type="checkbox" id="tree_type" checked>
+            <label class="custom-control-label " for="tree_type">Radial Tree</label>
+        </div>
+        <h5 class="mx-1 my-0 align-self-center"><span id="station_count" class="py-1 badge badge-secondary"></span></h5>
     </div>
-    <h5 class="m-0 ml-auto"><span id="focus_name" class="py-1 badge badge-secondary"></span></h5>
 </div>
 <div id="tree_div"></div>
 <div class="tooltip"></div>

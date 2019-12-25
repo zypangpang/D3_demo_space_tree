@@ -19,7 +19,7 @@ function main(data){
     console.log(Object.keys(info).length);
     console.log("finish init");*/
     console.log("begin find");
-    layer = findLayerConnections('北京南',200 , 'time' );
+    //layer = findLayerConnections('北京南',200 , 'time' );
 
     //radial_tree(layer,'tree_div');
     //tree_map(layer,'tree_div');
@@ -28,7 +28,21 @@ function main(data){
         tree_type=this.checked;
         tree_update();
     });
-    tree_update();
+    $("#input_form").submit(function (event) {
+        event.preventDefault();
+        let station=$("input[name='station']").val();
+        let scale=$("input[name='scale']").val();
+        let dimension=$("select[name='dimension']").val();
+        layer = findLayerConnections(station,+scale, dimension );
+        d3.select("#station_count").text(count_tree(layer));
+        tree_update();
+    });
+    $("#input_form").submit();
+}
+function count_tree(root) {
+    let val=1;
+    root.children.forEach(c=>val+=count_tree(c));
+    return val;
 }
 function tree_update() {
     d3.select("#tree_div").selectAll("*").remove();
